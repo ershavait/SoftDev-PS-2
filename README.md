@@ -23,13 +23,6 @@ The application is built using **HTML, CSS, and JavaScript** and stores booking 
 6. Users can cancel bookings if needed.
 7. Bookings are saved in LocalStorage so they remain after page refresh.
 
-## Project Structure
-
-study-room-booking/
-│
-├── index.html
-├── style.css
-└── script.js
 
 ## File Description
 
