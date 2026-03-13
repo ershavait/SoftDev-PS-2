@@ -44,11 +44,6 @@ This file manages room data, time slots, booking logic, canceling bookings, upda
 - JavaScript
 - Browser LocalStorage API
 
-## Future Improvements
-- User authentication system
-- Admin panel for managing rooms
-- Database-based booking system
-- Mobile responsive improvements
-- Booking limits per user
+ 
 
  
