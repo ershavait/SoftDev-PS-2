@@ -47,7 +47,7 @@ This file manages room data, time slots, booking logic, canceling bookings, upda
 
 ## Web Interface
 
-![Study Room Booking UI](interface.png)
+![Study Room Booking UI](WebInterface.png)
  
 
  
