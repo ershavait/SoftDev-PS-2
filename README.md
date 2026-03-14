@@ -44,6 +44,10 @@ This file manages room data, time slots, booking logic, canceling bookings, upda
 - JavaScript
 - Browser LocalStorage API
 
+
+## Web Interface
+
+![Study Room Booking UI](interface.png)
  
 
  
