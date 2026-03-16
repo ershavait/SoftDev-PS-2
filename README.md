@@ -12,16 +12,18 @@ The application is built using **HTML, CSS, and JavaScript** and stores booking 
 - Cancel existing bookings
 - Dark mode toggle
 - Bookings saved using LocalStorage
+- Confirmation alert before booking a room
 - Simple and responsive interface
 
 ## How the System Works
 1. The user selects a date using the date picker.
 2. The system displays all study rooms and their available time slots.
 3. If a slot is available, the user can click it to book the room.
-4. Once booked, the slot becomes unavailable.
-5. All bookings are listed in the **My Bookings** section.
-6. Users can cancel bookings if needed.
-7. Bookings are saved in LocalStorage so they remain after page refresh.
+4. The system will prompt the user with a confirmation alert specifying the room, date, and time slot.
+5. Once confirmed, the slot becomes unavailable.
+6. All bookings are listed in the **My Bookings** section.
+7. Users can cancel bookings if needed.
+8. Bookings are saved in LocalStorage so they remain after page refresh.
 
 
 ## File Description
@@ -48,6 +50,3 @@ This file manages room data, time slots, booking logic, canceling bookings, upda
 ## Web Interface
 
 ![Study Room Booking UI](UIInterface.png)
- 
-
- 
