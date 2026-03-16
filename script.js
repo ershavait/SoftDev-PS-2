@@ -1,165 +1,177 @@
-const rooms = [
-    { id: "A", name: "LRC 2nd Floor", capacity: 70 },
-    { id: "B", name: "LRC 3rd Floor", capacity: 85 },
-    { id: "C", name: "Swadhay", capacity: 60 }
-];
+document.addEventListener('DOMContentLoaded', () => {
+    const darkModeToggle = document.getElementById('darkModeToggle');
+    const bookingDateInput = document.getElementById('bookingDate');
+    const roomsContainer = document.getElementById('roomsContainer');
+    const myBookingsList = document.getElementById('myBookingsList');
 
-const slots = [
-    "9:00 - 11:00",
-    "11:00 - 13:00",
-    "14:00 - 16:00",
-    "16:00 - 18:00",
-    "19:00 - 21:00"
-];
+    const today = new Date().toISOString().split('T')[0];
+    bookingDateInput.min = today;
+    bookingDateInput.value = today;
 
-const roomsDiv = document.getElementById("rooms");
-const bookingsList = document.getElementById("myBookings");
-const datePicker = document.getElementById("datePicker");
-const darkBtn = document.getElementById("darkToggle");
+    const rooms = [
+        { id: 'room1', name: 'LRC 3rd Floor', capacity: 70, location: 'Library' },
+        { id: 'room2', name: 'Swadhay', capacity: 60, location: 'Backside Library' },
+        { id: 'room3', name: 'LRC 2nd floor', capacity: 65, location: 'Library' }
+    ];
 
-datePicker.valueAsDate = new Date();
+    const timeSlots = [
+        '9:00 - 10:00',
+        '10:00 - 11:00',
+        '11:00 - 12:00',
+        '12:00 - 1:00',
+        '2:00 - 3:00'
+    ];
 
-function getBookings() {
-    return JSON.parse(localStorage.getItem("bookings")) || [];
-}
+    let bookings = JSON.parse(localStorage.getItem('studyRoomBookings')) || [];
 
-function saveBookings(bookings) {
-    localStorage.setItem("bookings", JSON.stringify(bookings));
-}
+    let isDark = localStorage.getItem('darkMode') === 'true';
+    if (isDark) {
+        document.body.setAttribute('data-theme', 'dark');
+        darkModeToggle.textContent = 'Switch to Light Mode';
+    } else {
+        darkModeToggle.textContent = 'Switch to Dark Mode';
+    }
+    
+    darkModeToggle.addEventListener('click', () => {
+        isDark = !isDark;
+        if (isDark) {
+            document.body.setAttribute('data-theme', 'dark');
+            darkModeToggle.textContent = 'Switch to Light Mode';
+        } else {
+            document.body.removeAttribute('data-theme');
+            darkModeToggle.textContent = 'Switch to Dark Mode';
+        }
+        localStorage.setItem('darkMode', isDark);
+    });
 
-function renderRooms() {
+    function renderRooms() {
+        const selectedDate = bookingDateInput.value;
+        if (!selectedDate) return;
 
-    roomsDiv.innerHTML = "";
+        roomsContainer.innerHTML = '';
 
-    const bookings = getBookings();
-    const date = datePicker.value;
+        rooms.forEach((room) => {
+            const roomCard = document.createElement('div');
+            roomCard.className = 'room-card';
+            
+            const title = document.createElement('h3');
+            title.textContent = room.name;
+            
+            const meta = document.createElement('div');
+            meta.className = 'room-meta';
+            meta.textContent = `Capacity: ${room.capacity} | Location: ${room.location}`;
+            
+            const slotsContainer = document.createElement('div');
+            slotsContainer.className = 'slots';
 
-    rooms.forEach(room => {
+            timeSlots.forEach((slot) => {
+                const slotBtn = document.createElement('div');
+                slotBtn.className = 'slot';
+                slotBtn.textContent = slot;
 
-        const roomDiv = document.createElement("div");
-        roomDiv.className = "room";
+                const isBooked = bookings.some((b) => b.date === selectedDate && b.roomId === room.id && b.time === slot);
+                
+                if (isBooked) {
+                    slotBtn.classList.add('booked');
+                    slotBtn.title = "Already Booked";
+                } else {
+                    slotBtn.addEventListener('click', () => bookSlot(room, selectedDate, slot));
+                }
 
-        const h3 = document.createElement("h3");
-        h3.textContent = room.name;
-        h3.setAttribute("data-cap", `Cap. ${room.capacity}`);
-        roomDiv.appendChild(h3);
+                slotsContainer.appendChild(slotBtn);
+            });
 
-        const slotsDiv = document.createElement("div");
-        slotsDiv.className = "slots";
-
-        slots.forEach(slot => {
-
-            const key = room.id + "_" + slot + "_" + date;
-
-            const btn = document.createElement("div");
-            btn.className = "slot";
-
-            const booked = bookings.includes(key);
-
-            btn.textContent = slot;
-
-            if (booked) {
-                btn.classList.add("booked");
-            }
-            else {
-
-                btn.classList.add("available");
-
-                btn.onclick = () => {
-
-                    bookings.push(key);
-
-                    saveBookings(bookings);
-
-                    renderRooms();
-
-                    renderBookings();
-
-                };
-
-            }
-
-            slotsDiv.appendChild(btn);
-
+            roomCard.appendChild(title);
+            roomCard.appendChild(meta);
+            roomCard.appendChild(slotsContainer);
+            roomsContainer.appendChild(roomCard);
         });
+    }
 
-        roomDiv.appendChild(slotsDiv);
+    function bookSlot(room, date, time) {
+        const confirmMsg = `Are you sure you want to book ${room.name} for the time slot ${time} on ${date}?`;
+        const confirmBooking = window.confirm(confirmMsg);
+        
+        if (confirmBooking) {
+            const alreadyBooked = bookings.some((b) => b.date === date && b.roomId === room.id && b.time === time);
+            if (alreadyBooked) {
+                window.alert('Sorry, this slot is already booked!');
+                return;
+            }
 
-        roomsDiv.appendChild(roomDiv);
+            const newBooking = {
+                id: Date.now().toString(),
+                roomId: room.id,
+                roomName: room.name,
+                date: date,
+                time: time
+            };
 
-    });
-
-}
-
-function renderBookings() {
-
-    bookingsList.innerHTML = "";
-
-    const bookings = getBookings();
-
-    bookings.forEach((b, index) => {
-
-        const parts = b.split("_");
-
-        const roomId = parts[0];
-        const roomObj = rooms.find(r => r.id === roomId);
-        const room = roomObj.name;
-
-        const time = parts[1];
-        const date = parts[2];
-
-        const li = document.createElement("li");
-
-        li.innerHTML = `
-<strong>${room}</strong>
-<span>⏱ ${time}</span>
-<span>📅 ${new Date(date).toDateString()}</span>
-<button class="cancelBtn">✕ Cancel</button>
-`;
-
-        const cancelBtn = li.querySelector(".cancelBtn");
-
-        cancelBtn.onclick = () => {
-
-            bookings.splice(index, 1);
-
-            saveBookings(bookings);
-
+            bookings.push(newBooking);
+            saveBookings();
+            
             renderRooms();
+            renderMyBookings();
+            
+            window.alert('Room booked successfully!');
+        }
+    }
 
-            renderBookings();
+    function cancelBooking(bookingId) {
+        const confirmCancel = window.confirm("Do you want to cancel this booking?");
+        if (confirmCancel) {
+            bookings = bookings.filter((b) => b.id !== bookingId);
+            saveBookings();
+            
+            renderRooms();
+            renderMyBookings();
+        }
+    }
 
-        };
+    function renderMyBookings() {
+        myBookingsList.innerHTML = '';
 
-        bookingsList.appendChild(li);
+        if (bookings.length === 0) {
+            myBookingsList.textContent = 'No bookings yet.';
+            return;
+        }
 
-    });
+        const sortedBookings = [...bookings].sort((a, b) => new Date(a.date) - new Date(b.date));
 
-}
+        sortedBookings.forEach((booking) => {
+            const item = document.createElement('div');
+            item.className = 'booking-item';
+            
+            const details = document.createElement('div');
+            details.className = 'booking-details';
+            
+            const roomName = document.createElement('strong');
+            roomName.textContent = booking.roomName;
+            
+            const timeDate = document.createElement('span');
+            timeDate.className = 'booking-time';
+            timeDate.textContent = `${booking.date} • ${booking.time}`;
+            
+            details.appendChild(roomName);
+            details.appendChild(timeDate);
+            
+            const cancelBtn = document.createElement('button');
+            cancelBtn.className = 'cancel-btn';
+            cancelBtn.textContent = 'Cancel Booking';
+            cancelBtn.addEventListener('click', () => cancelBooking(booking.id));
 
-datePicker.addEventListener("change", () => {
+            item.appendChild(details);
+            item.appendChild(cancelBtn);
+            myBookingsList.appendChild(item);
+        });
+    }
+
+    function saveBookings() {
+        localStorage.setItem('studyRoomBookings', JSON.stringify(bookings));
+    }
+
+    bookingDateInput.addEventListener('change', renderRooms);
 
     renderRooms();
-
+    renderMyBookings();
 });
-
-darkBtn.onclick = () => {
-
-    document.body.classList.toggle("light");
-
-    if (document.body.classList.contains("light")) {
-
-        darkBtn.innerText = "Dark Mode";
-
-    }
-    else {
-
-        darkBtn.innerText = "Light Mode";
-
-    }
-
-};
-
-renderRooms();
-
-renderBookings();
