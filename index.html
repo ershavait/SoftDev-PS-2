@@ -1,28 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Study Room Booking</title>
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Room Booking System</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
+    <header>
+        <h1>Study Room Booking</h1>
+        <button id="darkModeToggle">Toggle Dark Mode</button>
+    </header>
 
-<h1>Study Room Booking</h1>
+    <main>
+        <section class="controls">
+            <label for="bookingDate">Select Date: </label>
+            <input type="date" id="bookingDate">
+        </section>
 
-<div class="top">
-<label>Date —</label>
-<input type="date" id="datePicker">
-<button id="darkToggle">Light Mode</button>
-</div>
+        <section id="roomsContainer" class="rooms-container">
+            
+        </section>
 
-<h2>Rooms</h2>
-<div id="rooms"></div>
+        <section class="bookings-panel">
+            <h2>My Bookings</h2>
+            <div id="myBookingsList">
+           
+            </div>
+        </section>
+    </main>
 
-<h2>My Bookings</h2>
-<ul id="myBookings"></ul>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
